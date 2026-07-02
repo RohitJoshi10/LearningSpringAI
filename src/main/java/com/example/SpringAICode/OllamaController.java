@@ -83,7 +83,7 @@ public class OllamaController {
         float[] embedding1 = embeddingModel.embed(text1);
         float[] embedding2 = embeddingModel.embed(text2);
 
-        double dotProduct = 0;
+        double dotProduct = 0; // Dot product= A.B = A1B1 + A2B2, Magnitude = A.A = A^2 = A1^2 + A2^2
         double norm1 = 0;
         double norm2 = 0;
 
