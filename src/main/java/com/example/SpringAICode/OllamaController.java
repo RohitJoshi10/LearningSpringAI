@@ -6,11 +6,15 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.SearchRequest; // Added
+import org.springframework.ai.document.Document;       // Added
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List; // Added
 import java.util.Map;
 
 @RestController
@@ -20,6 +24,10 @@ public class OllamaController {
     @Autowired
     @Qualifier("ollamaEmbeddingModel")
     private EmbeddingModel embeddingModel;
+
+
+    @Autowired
+    private VectorStore vectorStore;
 
     public OllamaController(OllamaChatModel chatModel){
         this.chatClient = ChatClient.create(chatModel);
@@ -68,7 +76,8 @@ public class OllamaController {
         String response = chatResponse
                 .getResult()
                 .getOutput()
-                .getText();
+                .getContent();
+                //.getText();
         return ResponseEntity.ok(response);
     }
 
@@ -96,4 +105,30 @@ public class OllamaController {
         return dotProduct * 100 / (Math.sqrt(norm1) * Math.sqrt(norm2));
     }
 
+
+    // This method gives me embeddings
+//    @PostMapping("/api/product")
+//    public List<Document> getProduct(@RequestParam String text) {
+//        // Direct query passing with default topK, or specifying it explicitly via query()
+//        return vectorStore.similaritySearch(
+//                SearchRequest.query(text).withTopK(2)
+//        );
+//    }
+
+    @PostMapping("/api/product")
+    public List<Map<String, Object>> getProduct(@RequestParam String text) {
+        List<Document> result = vectorStore.similaritySearch(
+                SearchRequest.query(text).withTopK(2)
+        );
+
+        // Sirf clean data return karne ke liye extract kar rahe hain
+        return result.stream().map(doc -> Map.of(
+                "id", doc.getId(),
+                "content", doc.getContent(),         // Isme aapka product details text aayega
+                "metadata", doc.getMetadata()     // Isme agar koi additional metadata hai toh
+        )).toList();
+    }
 }
+
+
+
