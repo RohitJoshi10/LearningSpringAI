@@ -1,0 +1,19 @@
+services:
+  pgvector:
+    # Uses PostgreSQL 16 with the official pgvector extension pre-installed
+    image: 'pgvector/pgvector:pg16'
+
+    # Environment variables to initialize the database setup
+    environment:
+      - 'POSTGRES_DB=springAI'
+      - 'POSTGRES_PASSWORD=postgres'
+      - 'POSTGRES_USER=postgres'
+
+    # Integrates with Spring Boot 3.1+ Testcontainers / Docker Compose support
+    # (Automatically injects JDBC properties into your running Spring app)
+    labels:
+      - "org.springframework.boot.service-connection=postgres"
+
+    # Maps port 5432 on your machine to port 5432 in the container
+    ports:
+      - '5432:5432'
