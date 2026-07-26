@@ -2,6 +2,7 @@ package com.example.SpringAICode;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -33,15 +34,15 @@ public class OllamaController {
     @Autowired
     private VectorStore vectorStore;
 
-//    public OllamaController(OllamaChatModel chatModel){
-//        this.chatClient = ChatClient.create(chatModel);
-//    }
+    public OllamaController(OllamaChatModel chatModel){
+        this.chatClient = ChatClient.create(chatModel);
+    }
 
     // For Memory jisse ki AI ko pata rhe meri past conversations.
-    public OllamaController(ChatClient.Builder builder){
-        ChatMemory chatMemory = new InMemoryChatMemory();
-        this.chatClient = builder.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build()).build();
-    }
+//    public OllamaController(ChatClient.Builder builder){
+//        ChatMemory chatMemory = new InMemoryChatMemory();
+//        this.chatClient = builder.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build()).build();
+//    }
 
     @PostMapping("/api/recommend")
     public String recommend(@RequestParam String type, @RequestParam String year, @RequestParam String lang){
@@ -90,6 +91,18 @@ public class OllamaController {
                 .getContent();
                 //.getText();
         return ResponseEntity.ok(response);
+    }
+
+
+    // RAG
+    @PostMapping("/api/ask")
+    public String getAnswerUsingRag(@RequestParam String query) {
+        return chatClient
+                .prompt(query)
+                .advisors(QuestionAnswerAdvisor.builder(vectorStore).build())
+                .call()
+                .content();
+
     }
 
 
