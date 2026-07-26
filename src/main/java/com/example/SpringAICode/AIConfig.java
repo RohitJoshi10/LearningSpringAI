@@ -23,21 +23,21 @@ public class AIConfig {
         return ChatClient.builder(ollamaChatModel);
     }
 
-    @Bean
-    public JedisPooled jedisPooled(){
-        return new JedisPooled("localhost", 6379);
-    }
+//    @Bean
+//    public JedisPooled jedisPooled(){
+//        return new JedisPooled("localhost", 6379);
+//    }
 
 //  Redis Vector
-    @Bean
-    public VectorStore vectorStore(JedisPooled jedisPooled, @Qualifier("ollamaEmbeddingModel") EmbeddingModel embeddingModel) {
-        RedisVectorStore.RedisVectorStoreConfig config = RedisVectorStore.RedisVectorStoreConfig.builder()
-                .withIndexName("product-index")
-                .withPrefix("product:")
-                .build();
-
-        return new RedisVectorStore(config, embeddingModel, jedisPooled, true);
-    }
+//    @Bean
+//    public VectorStore vectorStore(JedisPooled jedisPooled, @Qualifier("ollamaEmbeddingModel") EmbeddingModel embeddingModel) {
+//        RedisVectorStore.RedisVectorStoreConfig config = RedisVectorStore.RedisVectorStoreConfig.builder()
+//                .withIndexName("product-index")
+//                .withPrefix("product:")
+//                .build();
+//
+//        return new RedisVectorStore(config, embeddingModel, jedisPooled, true);
+//    }
 
 
 //    Pg VectorStore
@@ -47,11 +47,11 @@ public class AIConfig {
 //    }
 
 //    Simple Vector store
-//    @Bean
-//    public VectorStore vectorStore(@Qualifier("ollamaEmbeddingModel") EmbeddingModel embeddingModel) {
-//        // Fixed: Builder hata kar direct new constructor use kiya hai
-//        return new SimpleVectorStore(embeddingModel);
-//    }
+    @Bean
+    public VectorStore vectorStore(@Qualifier("ollamaEmbeddingModel") EmbeddingModel embeddingModel) {
+        // Fixed: Builder hata kar direct new constructor use kiya hai
+        return new SimpleVectorStore(embeddingModel);
+    }
 
 
 

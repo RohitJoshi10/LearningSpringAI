@@ -1,6 +1,9 @@
 package com.example.SpringAICode;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -19,6 +22,7 @@ import java.util.Map;
 
 @RestController
 public class OllamaController {
+
     private final ChatClient chatClient;
 
     @Autowired
@@ -29,8 +33,14 @@ public class OllamaController {
     @Autowired
     private VectorStore vectorStore;
 
-    public OllamaController(OllamaChatModel chatModel){
-        this.chatClient = ChatClient.create(chatModel);
+//    public OllamaController(OllamaChatModel chatModel){
+//        this.chatClient = ChatClient.create(chatModel);
+//    }
+
+    // For Memory jisse ki AI ko pata rhe meri past conversations.
+    public OllamaController(ChatClient.Builder builder){
+        ChatMemory chatMemory = new InMemoryChatMemory();
+        this.chatClient = builder.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build()).build();
     }
 
     @PostMapping("/api/recommend")
@@ -67,7 +77,8 @@ public class OllamaController {
 
     @GetMapping("/api/ollama/{message}")
     public ResponseEntity<String> getAnswer(@PathVariable String message){
-        ChatResponse chatResponse = chatClient.prompt(message)
+        ChatResponse chatResponse = chatClient
+                .prompt(message)
                 .call()
                 .chatResponse();
 
