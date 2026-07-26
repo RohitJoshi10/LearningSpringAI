@@ -17,3 +17,11 @@ services:
     # Maps port 5432 on your machine to port 5432 in the container
     ports:
       - '5432:5432'
+
+
+
+# Notes:
+# 1. To start the container: docker compose up -d
+# 2. Verify if it's running and healthy:docker compose ps
+# 3. Stop and remove existing container: docker compose down -v
+# 4. For redis: docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
