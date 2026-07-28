@@ -40,11 +40,24 @@ public class AudioGenController {
 
 
 
-    // Audio Speech Model
+//    // Audio Speech Model
+//    @PostMapping("api/tts")
+//    public byte[] tts(@RequestParam String text){
+//        return  audioSpeechModel.call(text);
+//    }
+
+
+    // Audio Speech Model Options
     @PostMapping("api/tts")
     public byte[] tts(@RequestParam String text){
-        return  audioSpeechModel.call(text);
+        OpenAiAudioSpeechOptions options = OpenAiAudioSpeechOptions.builder()
+                .speed(1.5f)
+                .voice(OpenAiAudioApi.SpeechRequest.Voice.NOVA)
+                .build();
+
+        SpeechPrompt prompt = new SpeechPrompt(text, options);
+
+        return audioSpeechModel.call(prompt)
+                .getResult().getOutput();
     }
-
-
 }
