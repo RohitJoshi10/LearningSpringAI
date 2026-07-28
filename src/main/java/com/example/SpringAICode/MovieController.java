@@ -4,6 +4,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.converter.ListOutputConverter;
 import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,5 +41,18 @@ public class MovieController {
                 .entity(new BeanOutputConverter<Movie>(Movie.class));
 
         return movie;
+    }
+
+
+    @GetMapping("/moviesList")
+    public List<Movie> getMovieList(@RequestParam String name){
+        BeanOutputConverter<Movie> opCon = new BeanOutputConverter<Movie>(Movie.class);
+        List<Movie> movies = chatClient.prompt()
+                .user(u -> u.text("Top 5 movies of {name}").param("name", name))
+                .call()
+                .entity(new BeanOutputConverter<List<Movie>>(new ParameterizedTypeReference<List<Movie>>() {
+                }));
+
+        return movies;
     }
 }
