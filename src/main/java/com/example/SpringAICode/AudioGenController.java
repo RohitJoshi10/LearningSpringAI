@@ -11,17 +11,20 @@ import org.springframework.web.multipart.MultipartFile;
 public class AudioGenController {
 
     private OpenAiAudioTranscriptionModel audioModel;
+    private OpenAiAudioSpeechModel audioSpeechModel;
 
-    public AudioGenController(OpenAiAudioTranscriptionModel audioModel){
+    public AudioGenController(OpenAiAudioTranscriptionModel audioModel, OpenAiAudioSpeechModel audioSpeechModel){
         this.audioModel = audioModel;
+        this.audioSpeechModel = audioSpeechModel;
     }
 
+    // Audio Transcription model
 //    @PostMapping("api/stt")
 //    public String speechToText(@RequestParam MultipartFile file){
 //        return audioModel.call(file.getResource()); // sends audio to the model and returns transcribed text.
 //    }
 
-    // Audio transcription model
+    // Audio transcription model with options
     @PostMapping("api/stt")
     public String speechToText(@RequestParam MultipartFile file){
         OpenAiAudioTranscriptionOptions options = OpenAiAudioTranscriptionOptions.builder()
@@ -34,4 +37,14 @@ public class AudioGenController {
         return audioModel.call(prompt)
                 .getResult().getOutput();
     }
+
+
+
+    // Audio Speech Model
+    @PostMapping("api/tts")
+    public byte[] tts(@RequestParam String text){
+        return  audioSpeechModel.call(text);
+    }
+
+
 }
