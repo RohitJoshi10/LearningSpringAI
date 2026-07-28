@@ -1,5 +1,6 @@
 package com.example.SpringAICode;
 
+import org.springframework.ai.audio.transcription.AudioTranscriptionPrompt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,8 +16,22 @@ public class AudioGenController {
         this.audioModel = audioModel;
     }
 
+//    @PostMapping("api/stt")
+//    public String speechToText(@RequestParam MultipartFile file){
+//        return audioModel.call(file.getResource()); // sends audio to the model and returns transcribed text.
+//    }
+
+    // Audio transcription model
     @PostMapping("api/stt")
     public String speechToText(@RequestParam MultipartFile file){
-        return audioModel.call(file.getResource()); // sends audio to the model and returns transcribed text.
+        OpenAiAudioTranscriptionOptions options = OpenAiAudioTranscriptionOptions.builder()
+                .language("es")
+                .responseFormate(OpenAiAudioApi.TranscriptResponseFormate.SRT)
+                .build();
+
+        AudioTranscriptionPrompt prompt = new AudioTranscriptionPrompt(file.getResource(), options);
+
+        return audioModel.call(prompt)
+                .getResult().getOutput();
     }
 }
